@@ -1,4 +1,7 @@
 projectname = geocoordinatecalculator
+appname = "Geo coordinate calculator"
+appauthor = Martchus
+appurl = "https://github.com/$${appauthor}/$${projectname}"
 VERSION = 1.0.0
 
 CONFIG += no-gui
