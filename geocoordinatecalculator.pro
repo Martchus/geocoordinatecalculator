@@ -35,12 +35,10 @@ OTHER_FILES += \
     LICENSE
 
 CONFIG(debug, debug|release) {
-       LIBS    += -L../../ -lc++utilitiesd
+    LIBS += -lc++utilitiesd
 } else {
-       LIBS    += -L../../ -lc++utilities
+    LIBS += -lc++utilities
 }
-
-INCLUDEPATH += ../
 
 # installs
 target.path = $$(INSTALL_ROOT)/bin
