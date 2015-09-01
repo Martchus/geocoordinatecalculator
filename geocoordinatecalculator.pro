@@ -16,6 +16,7 @@ CONFIG += no-gui
 TEMPLATE = app
 
 CONFIG -= qt
+CONFIG += console
 
 SOURCES += main.cpp \
     location.cpp \
