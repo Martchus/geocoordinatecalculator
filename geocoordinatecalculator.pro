@@ -3,7 +3,7 @@ appname = "Geo coordinate calculator"
 appauthor = Martchus
 appurl = "https://github.com/$${appauthor}/$${projectname}"
 QMAKE_TARGET_DESCRIPTION = "Command line tool for basic calculations with geo coordinates such as format conversions and calculation of distance, bearing, mid point, destination and more."
-VERSION = 1.0.0
+VERSION = 1.0.1
 
 CONFIG += no-gui
 
