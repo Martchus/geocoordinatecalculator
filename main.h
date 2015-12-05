@@ -1,8 +1,8 @@
 #ifndef MAIN_H_INCLUDED
 #define MAIN_H_INCLUDED
 
-#include "angle.h"
-#include "location.h"
+#include "./angle.h"
+#include "./location.h"
 
 #include <iostream>
 #include <string>

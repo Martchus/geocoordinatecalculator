@@ -1,6 +1,11 @@
-#include "main.h"
-#include "location.h"
-#include "utils.h"
+#include "./main.h"
+#include "./location.h"
+#include "./utils.h"
+
+// include configuration from separate header file when building with CMake
+#ifndef APP_METADATA_AVAIL
+#include "config.h"
+#endif
 
 #include <c++utilities/application/argumentparser.h>
 #include <c++utilities/application/failure.h>
@@ -21,6 +26,8 @@ SystemForLocations outputSystemForLocations = SystemForLocations::LatitudeLongit
 int main(int argc, char *argv[])
 {   
     try {
+        SET_APPLICATION_INFO;
+
         ArgumentParser argparser;
 
         Argument convert("convert", "c", "Converts the given coordinate or location to the specified output form.");
@@ -144,7 +151,7 @@ int main(int argc, char *argv[])
                 cout << endl;
                 printAngleFormatInfo(cout);
             } else if(version.isPresent()) {
-                cout << "1.0.0";
+                cout << APP_VERSION;
             } else if(convert.isPresent()) {
                 printConversion(convert.value(0));
             } else if(distance.isPresent()) {

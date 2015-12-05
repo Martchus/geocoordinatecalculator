@@ -1,7 +1,7 @@
 #ifndef LOCATION_H
 #define LOCATION_H
 
-#include "angle.h"
+#include "./angle.h"
 
 #include <vector>
 #include <string>
