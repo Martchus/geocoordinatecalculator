@@ -21,8 +21,8 @@ set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "Command line tool for basic calculations with geo coordinates such as format conversions and calculation of distance, bearing, mid point, destination and more.")
 set(META_VERSION_MAJOR 1)
-set(META_VERSION_MINOR 0)
-set(META_VERSION_PATCH 1)
+set(META_VERSION_MINOR 1)
+set(META_VERSION_PATCH 0)
 set(META_APP_VERSION ${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH})
 
 # stringification of meta data
