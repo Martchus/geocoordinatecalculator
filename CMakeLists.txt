@@ -22,7 +22,7 @@ set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "Command line tool for basic calculations with geo coordinates such as format conversions and calculation of distance, bearing, mid point, destination and more.")
 set(META_VERSION_MAJOR 1)
 set(META_VERSION_MINOR 1)
-set(META_VERSION_PATCH 0)
+set(META_VERSION_PATCH 1)
 set(META_APP_VERSION ${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH})
 
 # stringification of meta data
@@ -89,18 +89,26 @@ install(TARGETS ${META_PROJECT_NAME}
     RUNTIME DESTINATION bin
     COMPONENT binary
 )
-add_custom_target(install-binary
-    DEPENDS ${META_PROJECT_NAME}
-    COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=binary -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
-)
-add_custom_target(install-mingw-w64
-    DEPENDS install-binary
-)
-add_custom_target(install-binary-strip
-    DEPENDS ${META_PROJECT_NAME}
-    COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_DO_STRIP=1 -DCMAKE_INSTALL_COMPONENT=binary -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
-)
-add_custom_target(install-mingw-w64-strip
-    DEPENDS install-binary-strip
-)
+if(NOT TARGET install-binary)
+    add_custom_target(install-binary
+        DEPENDS ${META_PROJECT_NAME}
+        COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_COMPONENT=binary -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+    )
+endif()
+if(NOT TARGET install-mingw-w64)
+    add_custom_target(install-mingw-w64
+        DEPENDS install-binary
+    )
+endif()
+if(NOT TARGET install-binary-strip)
+    add_custom_target(install-binary-strip
+        DEPENDS ${META_PROJECT_NAME}
+        COMMAND "${CMAKE_COMMAND}" -DCMAKE_INSTALL_DO_STRIP=1 -DCMAKE_INSTALL_COMPONENT=binary -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+    )
+endif()
+if(NOT TARGET install-mingw-w64-strip)
+    add_custom_target(install-mingw-w64-strip
+        DEPENDS install-binary-strip
+    )
+endif()
 
