@@ -26,7 +26,7 @@ set(META_VERSION_PATCH 1)
 set(META_APP_VERSION ${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH})
 
 # find c++utilities
-find_package(c++utilities REQUIRED)
+find_package(c++utilities 3.3.0 REQUIRED)
 use_cpp_utilities()
 
 # include modules to apply configuration
