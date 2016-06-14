@@ -6,6 +6,7 @@
 
 #include <c++utilities/application/argumentparser.h>
 #include <c++utilities/application/failure.h>
+#include <c++utilities/io/catchiofailure.h>
 
 #include <iostream>
 #include <fstream>
@@ -204,7 +205,7 @@ vector<Location> locationsFromFile(const string &path)
     fstream file;
     file.open(path, ios_base::in);
     if(!file)
-        throw ios_base::failure("Unable to open the file \"" + path + "\".");
+        IoUtilities::throwIoFailure(("Unable to open the file \"" + path + "\".").data());
     file.exceptions(ios_base::badbit);
     string line;
     vector<Location> locations;
@@ -259,8 +260,9 @@ void printTrackLength(const string &filePath, bool circle)
         vector<Location> locations(locationsFromFile(filePath));
         printDistance(Location::trackLength(locations, circle));
         cout << " (" << locations.size() << " trackpoints)";
-    } catch(ios_base::failure &ex) {
-        cout << "An IO failure occured when reading file from provided path: " << ex.what() << endl;
+    } catch(...) {
+        const char *what = ::IoUtilities::catchIoFailure();
+        cout << "An IO failure occured when reading file from provided path: " << what << endl;
     }
 }
 
@@ -328,7 +330,8 @@ void printMapsLink(const string &filePath)
         } else {
             throw Failure("At least one location is required to generate a link.");
         }
-    } catch(ios_base::failure &ex) {
-        cout << "An IO failure occured when reading file from provided path: " << ex.what() << endl;
+    } catch(...) {
+        const char *what = ::IoUtilities::catchIoFailure();
+        cout << "An IO failure occured when reading file from provided path: " << what << endl;
     }
 }
