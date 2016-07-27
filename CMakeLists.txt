@@ -20,10 +20,11 @@ set(DOC_FILES
 
 # meta data
 set(META_PROJECT_NAME geocoordinatecalculator)
+set(META_PROJECT_TYPE application)
 set(META_APP_NAME "Geo coordinate calculator")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
-set(META_APP_DESCRIPTION "Command line tool for basic calculations with geo coordinates such as format conversions and calculation of distance, bearing, mid point, destination and more.")
+set(META_APP_DESCRIPTION "Command line tool for basic calculations with geo coordinates such as format conversions and calculation of distance, bearing, mid point, destination and more")
 set(META_VERSION_MAJOR 1)
 set(META_VERSION_MINOR 1)
 set(META_VERSION_PATCH 2)
@@ -38,3 +39,4 @@ include(BasicConfig)
 include(WindowsResources)
 include(AppTarget)
 include(ShellCompletion)
+include(ConfigHeader)
