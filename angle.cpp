@@ -1,7 +1,7 @@
-#include "./utils.h"
 #include "./angle.h"
 
 #include <c++utilities/application/failure.h>
+#include <c++utilities/conversion/stringconversion.h>
 
 #include <iostream>
 #include <iomanip>
@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace ApplicationUtilities;
+using namespace ConversionUtilities;
 
 Angle::Angle() :
     m_val(0)
@@ -38,26 +39,26 @@ Angle::Angle(const string &value, AngularMeasure measure) :
 {
     switch(measure) {
     case AngularMeasure::Radian:
-        m_val += ConversionUtilities::numberFromString<double>(value);
+        m_val += stringToNumber<double>(value);
         break;
     case AngularMeasure::Degree:
     {
         string::size_type mpos, spos = string::npos;
         mpos = value.find(':');
         if(mpos == string::npos)
-            m_val += ConversionUtilities::numberFromString<double>(value);
+            m_val += stringToNumber<double>(value);
         else if(mpos >= (value.length() - 1))
             throw Failure("excepted minutes after ':' in " + value);
         else {
-            m_val += ConversionUtilities::numberFromString<double>(value.substr(0, mpos));
+            m_val += stringToNumber<double>(value.substr(0, mpos));
             spos = value.find(':', mpos + 1);
             if(spos == string::npos)
-                m_val += ConversionUtilities::numberFromString<double>(value.substr(mpos + 1)) / 60.0;
+                m_val += stringToNumber<double>(value.substr(mpos + 1)) / 60.0;
             else if(spos >= (value.length() - 1))
                 throw Failure("excepted seconds after second ':'' in " + value);
             else
-                m_val += (ConversionUtilities::numberFromString<double>(value.substr(mpos + 1, spos - mpos - 1)) / 60.0)
-                        + (ConversionUtilities::numberFromString<double>(value.substr(spos + 1)) / 3600.0);
+                m_val += (stringToNumber<double>(value.substr(mpos + 1, spos - mpos - 1)) / 60.0)
+                        + (stringToNumber<double>(value.substr(spos + 1)) / 3600.0);
         }
         m_val = m_val * M_PI / 180.0;
         break;

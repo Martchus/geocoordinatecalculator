@@ -1,7 +1,7 @@
 #include "./location.h"
-#include "./utils.h"
 
 #include <c++utilities/application/failure.h>
+#include <c++utilities/conversion/stringconversion.h>
 
 #include <sstream>
 #include <iomanip>
@@ -9,6 +9,7 @@
 
 using namespace std;
 using namespace ApplicationUtilities;
+using namespace ConversionUtilities;
 
 // WGS84 Parameters
 #define WGS84_A		6378137.0               // major axis
@@ -258,10 +259,10 @@ void Location::setValueByProvidedUtmWgs4Coordinates(const string &utmWgs4Coordin
     if(epos != 0 && epos != string::npos) {
         string::size_type npos = utmWgs4Coordinates.find('N', epos);
         if(npos < (utmWgs4Coordinates.length() - 1) && npos != string::npos) {
-            int zone = ConversionUtilities::numberFromString<int>(utmWgs4Coordinates.substr(0, epos - 1));
+            int zone = stringToNumber<int>(utmWgs4Coordinates.substr(0, epos - 1));
             char zoneDesignator = utmWgs4Coordinates.at(epos - 1);
-            double east = ConversionUtilities::numberFromString<double>(utmWgs4Coordinates.substr(epos + 1, npos - epos - 1));
-            double north = ConversionUtilities::numberFromString<double>(utmWgs4Coordinates.substr(npos + 1));
+            double east = stringToNumber<double>(utmWgs4Coordinates.substr(epos + 1, npos - epos - 1));
+            double north = stringToNumber<double>(utmWgs4Coordinates.substr(npos + 1));
             setValueByProvidedUtmWgs4Coordinates(zone, zoneDesignator, east, north);
             return;
         }

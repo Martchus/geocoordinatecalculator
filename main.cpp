@@ -1,11 +1,11 @@
 #include "./main.h"
 #include "./location.h"
-#include "./utils.h"
 
 #include "resources/config.h"
 
 #include <c++utilities/application/argumentparser.h>
 #include <c++utilities/application/failure.h>
+#include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/catchiofailure.h>
 
 #include <iostream>
@@ -173,8 +173,12 @@ int main(int argc, char *argv[])
             } else {
                 cerr << "No arguments given. See --help for available commands.";
             }
+        } catch(const ConversionException &) {
+            cerr << "The provided numbers couldn't be parsed correctly." << endl;
+            cerr << endl;
+            printAngleFormatInfo(cerr);
         } catch(const Failure &ex) {
-            cerr << "The provided locations/coordinates couldn't be parsed correctly. " << ex.what() << endl;
+            cerr << "The provided locations/coordinates couldn't be parsed correctly: " << ex.what() << endl;
             cerr << endl;
             printAngleFormatInfo(cerr);
         }
@@ -290,7 +294,7 @@ void printMidpoint(const string &locationstr1, const string &locationstr2)
 void printDestination(const string &locationstr, const string &distancestr, const string &bearingstr)
 {
     Location start = locationFromString(locationstr);
-    double distance = numberFromString<double>(distancestr);
+    double distance = stringToNumber<double>(distancestr);
     Angle bearing(bearingstr, inputAngularMeasure);
     printLocation(start.destination(distance, bearing));
 }
