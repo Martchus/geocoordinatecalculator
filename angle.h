@@ -3,22 +3,11 @@
 
 #include <string>
 
-class Angle
-{
+class Angle {
 public:
-    enum class AngularMeasure
-    {
-        Radian,
-        Degree
-    };
+    enum class AngularMeasure { Radian, Degree };
 
-    enum class OutputForm
-    {
-        Degrees,
-        Minutes,
-        Seconds,
-        Radians
-    };
+    enum class OutputForm { Degrees, Minutes, Seconds, Radians };
 
     Angle();
     Angle(double value, AngularMeasure measure = AngularMeasure::Radian);
@@ -32,12 +21,13 @@ public:
     std::string toString() const;
     std::string toString(OutputForm format) const;
 
-    bool operator ==(const Angle &other) const;
-    bool operator !=(const Angle &other) const;
-    Angle operator +(const Angle &other) const;
-    Angle operator -(const Angle &other) const;
-    Angle &operator +=(const Angle &other);
-    Angle &operator -=(const Angle &other);
+    bool operator==(const Angle &other) const;
+    bool operator!=(const Angle &other) const;
+    Angle operator+(const Angle &other) const;
+    Angle operator-(const Angle &other) const;
+    Angle &operator+=(const Angle &other);
+    Angle &operator-=(const Angle &other);
+
 private:
     double m_val;
 };

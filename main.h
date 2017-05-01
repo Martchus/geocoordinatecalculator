@@ -8,11 +8,7 @@
 #include <string>
 #include <vector>
 
-enum class SystemForLocations
-{
-    LatitudeLongitude,
-    UTMWGS84
-};
+enum class SystemForLocations { LatitudeLongitude, UTMWGS84 };
 
 extern Angle::AngularMeasure inputAngularMeasure;
 extern Angle::OutputForm outputFormForAngles;
@@ -34,6 +30,5 @@ void printMidpoint(const std::string &locationstr1, const std::string &locations
 void printDestination(const std::string &locationstr, const std::string &distancestr, const std::string &bearingstr);
 void printLocation(const Location &location);
 void printMapsLink(const std::string &filePath);
-
 
 #endif // MAIN_H_INCLUDED

@@ -3,10 +3,10 @@
 #include <c++utilities/application/failure.h>
 #include <c++utilities/conversion/stringconversion.h>
 
-#include <iostream>
-#include <iomanip>
-#include <sstream>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #ifndef M_PI
 #define M_PI 3.14159265359
@@ -16,16 +16,15 @@ using namespace std;
 using namespace ApplicationUtilities;
 using namespace ConversionUtilities;
 
-Angle::Angle() :
-    m_val(0)
+Angle::Angle()
+    : m_val(0)
 {
 }
 
-Angle::Angle(double value, AngularMeasure measure) :
-    m_val(0)
+Angle::Angle(double value, AngularMeasure measure)
+    : m_val(0)
 {
-    switch(measure)
-    {
+    switch (measure) {
     case AngularMeasure::Radian:
         m_val = value;
         break;
@@ -34,31 +33,30 @@ Angle::Angle(double value, AngularMeasure measure) :
     }
 }
 
-Angle::Angle(const string &value, AngularMeasure measure) :
-    m_val(0)
+Angle::Angle(const string &value, AngularMeasure measure)
+    : m_val(0)
 {
-    switch(measure) {
+    switch (measure) {
     case AngularMeasure::Radian:
         m_val += stringToNumber<double>(value);
         break;
-    case AngularMeasure::Degree:
-    {
+    case AngularMeasure::Degree: {
         string::size_type mpos, spos = string::npos;
         mpos = value.find(':');
-        if(mpos == string::npos)
+        if (mpos == string::npos)
             m_val += stringToNumber<double>(value);
-        else if(mpos >= (value.length() - 1))
+        else if (mpos >= (value.length() - 1))
             throw Failure("excepted minutes after ':' in " + value);
         else {
             m_val += stringToNumber<double>(value.substr(0, mpos));
             spos = value.find(':', mpos + 1);
-            if(spos == string::npos)
+            if (spos == string::npos)
                 m_val += stringToNumber<double>(value.substr(mpos + 1)) / 60.0;
-            else if(spos >= (value.length() - 1))
+            else if (spos >= (value.length() - 1))
                 throw Failure("excepted seconds after second ':'' in " + value);
             else
                 m_val += (stringToNumber<double>(value.substr(mpos + 1, spos - mpos - 1)) / 60.0)
-                        + (stringToNumber<double>(value.substr(spos + 1)) / 3600.0);
+                    + (stringToNumber<double>(value.substr(spos + 1)) / 3600.0);
         }
         m_val = m_val * M_PI / 180.0;
         break;
@@ -83,14 +81,18 @@ bool Angle::isNull() const
 
 void Angle::adjust0To360()
 {
-    while(m_val < 0) m_val += 2.0 * M_PI;
-    while(m_val > 2.0 * M_PI) m_val -= 2.0 * M_PI;
+    while (m_val < 0)
+        m_val += 2.0 * M_PI;
+    while (m_val > 2.0 * M_PI)
+        m_val -= 2.0 * M_PI;
 }
 
 void Angle::adjust180To180()
 {
-    while(m_val > M_PI) m_val -= 2.0 * M_PI;
-    while(m_val < -M_PI) m_val += 2.0 * M_PI;
+    while (m_val > M_PI)
+        m_val -= 2.0 * M_PI;
+    while (m_val < -M_PI)
+        m_val += 2.0 * M_PI;
 }
 
 void Angle::reverse()
@@ -104,19 +106,19 @@ string Angle::toString(OutputForm format) const
     stringstream sstream(stringstream::in | stringstream::out);
     sstream << setprecision(9);
     double intpart, fractpart;
-    switch(format) {
+    switch (format) {
     case OutputForm::Degrees:
         sstream << degreeValue();
         break;
     case OutputForm::Minutes:
-        if(degreeValue() < 0)
+        if (degreeValue() < 0)
             sstream << "-";
         fractpart = modf(fabs(degreeValue()), &intpart);
         fractpart *= 60;
         sstream << intpart << ":" << fractpart;
         break;
     case OutputForm::Seconds:
-        if(degreeValue() < 0)
+        if (degreeValue() < 0)
             sstream << "-";
         fractpart = modf(fabs(degreeValue()), &intpart);
         sstream << intpart << ":";
@@ -131,33 +133,33 @@ string Angle::toString(OutputForm format) const
     return sstream.str();
 }
 
-bool Angle::operator ==(const Angle &other) const
+bool Angle::operator==(const Angle &other) const
 {
     return m_val == other.m_val;
 }
 
-bool Angle::operator !=(const Angle &other) const
+bool Angle::operator!=(const Angle &other) const
 {
     return m_val != other.m_val;
 }
 
-Angle Angle::operator +(const Angle &other) const
+Angle Angle::operator+(const Angle &other) const
 {
     return Angle(m_val + other.m_val);
 }
 
-Angle Angle::operator -(const Angle &other) const
+Angle Angle::operator-(const Angle &other) const
 {
     return Angle(m_val - other.m_val);
 }
 
-Angle &Angle::operator +=(const Angle &other)
+Angle &Angle::operator+=(const Angle &other)
 {
     m_val += other.m_val;
     return *this;
 }
 
-Angle &Angle::operator -=(const Angle &other)
+Angle &Angle::operator-=(const Angle &other)
 {
     m_val -= other.m_val;
     return *this;

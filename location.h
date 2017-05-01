@@ -3,17 +3,12 @@
 
 #include "./angle.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
-class Location
-{
+class Location {
 public:
-    enum class GeographicCoordinateSystem
-    {
-        LatitudeAndLongitude,
-        UTMWGS84
-    };
+    enum class GeographicCoordinateSystem { LatitudeAndLongitude, UTMWGS84 };
 
     Location();
     Location(const Angle &lat, const Angle &lon);
@@ -42,6 +37,7 @@ public:
     static double trackLength(const std::vector<Location> &track, bool circle = false);
     static double earthRadius();
     static Angle angularDistance(double distance);
+
 protected:
 private:
     Angle m_lat;
