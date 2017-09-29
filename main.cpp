@@ -23,177 +23,173 @@ SystemForLocations outputSystemForLocations = SystemForLocations::LatitudeLongit
 
 int main(int argc, char *argv[])
 {
+    SET_APPLICATION_INFO;
+
+    ArgumentParser argparser;
+
+    Argument convert("convert", 'c', "Converts the given coordinate or location to the specified output form.");
+    convert.setRequiredValueCount(1);
+    convert.appendValueName("coordinate/location");
+
+    Argument distance("distance", 'd', "Computes the approximate distance in meters between two locations.");
+    distance.setRequiredValueCount(2);
+    distance.appendValueName("location 1");
+    distance.appendValueName("location 2");
+
+    Argument trackLength("track-length", 't',
+        "Computes the approximate length in meters of a track given by a file containing trackpoints separated by new lines.");
+    Argument fileArg("file", 'f', "Specifies the file containing the track points");
+    fileArg.setRequiredValueCount(1);
+    fileArg.appendValueName("path");
+    fileArg.setRequired(true);
+    Argument circle(
+        "circle", '\0', "If present the distance between the first and the last trackpoints will be added to the total track length.");
+    trackLength.setSubArguments({ &fileArg, &circle });
+
+    Argument bearing("bearing", 'b',
+        "Computes the approximate initial bearing East of true North when traveling along the shortest path between the given locations.");
+    bearing.setRequiredValueCount(2);
+    bearing.appendValueName("location 1");
+    bearing.appendValueName("location 2");
+
+    Argument fbearing("final-bearing", '\0',
+        "Computes the approximate final bearing East of true North when traveling along the shortest path between the given locations.");
+    fbearing.setRequiredValueCount(2);
+    fbearing.appendValueName("location 1");
+    fbearing.appendValueName("location 2");
+
+    Argument midpoint("midpoint", 'm', "Computes the approximate midpoint between the given locations.");
+    midpoint.setRequiredValueCount(2);
+    midpoint.appendValueName("location 1");
+    midpoint.appendValueName("location 2");
+
+    Argument destination("destination", '\0', "Calculates destination point given distance and bearing from start point.");
+    destination.setRequiredValueCount(3);
+    destination.appendValueName("start");
+    destination.appendValueName("distance");
+    destination.appendValueName("bearing");
+
+    Argument gmapsLink(
+        "gmaps-link", '\0', "Generates a Google Maps link for all locations given by a file containing locations separated by new lines.");
+    gmapsLink.setRequiredValueCount(1);
+    gmapsLink.appendValueName("path");
+
+    Argument inputAngularMeasureArg("input-angular-measure", 'i',
+        "Use this option to specify the angular measure you use to provide angles (degree or radian; default is degree).");
+    inputAngularMeasureArg.setRequiredValueCount(1);
+    inputAngularMeasureArg.appendValueName("angular measure");
+    inputAngularMeasureArg.setCombinable(true);
+
+    Argument outputFormForAnglesArg("output-angle-form", 'o',
+        "Use this option to specify the output form for angles (degrees, minutes, seconds or radians; default is degrees).");
+    outputFormForAnglesArg.setRequiredValueCount(1);
+    outputFormForAnglesArg.appendValueName("form");
+    outputFormForAnglesArg.setCombinable(true);
+
+    Argument inputSystemForLocationsArg("input-location-system", '\0',
+        "Use this option to specify the geographic system you use to provide locations (latitude&longitue or UTM-WGS84).");
+    inputSystemForLocationsArg.setRequiredValueCount(1);
+    inputSystemForLocationsArg.appendValueName("system");
+    inputSystemForLocationsArg.setCombinable(true);
+
+    Argument outputSystemForLocationsArg("output-location-system", '\0',
+        "Use this option to specify which geographic system is used to display locations (latitude&longitue or UTM-WGS84).");
+    outputSystemForLocationsArg.setRequiredValueCount(1);
+    outputSystemForLocationsArg.appendValueName("system");
+    outputSystemForLocationsArg.setCombinable(true);
+
+    HelpArgument help(argparser);
+
+    Argument version("version", 'v', "Shows the version of this application.");
+    argparser.setMainArguments({ &help, &convert, &distance, &trackLength, &bearing, &fbearing, &midpoint, &destination, &gmapsLink,
+        &inputAngularMeasureArg, &outputFormForAnglesArg, &inputSystemForLocationsArg, &outputSystemForLocationsArg, &version });
+    argparser.parseArgsOrExit(argc, argv);
+
+    if (inputAngularMeasureArg.isPresent()) {
+        const char *inputFormat = inputAngularMeasureArg.values().front();
+        if (!strcmp(inputFormat, "radian")) {
+            inputAngularMeasure = Angle::AngularMeasure::Radian;
+        } else if (!strcmp(inputFormat, "degree")) {
+            inputAngularMeasure = Angle::AngularMeasure::Degree;
+        } else {
+            cerr << "Invalid angular measure given, see --help." << endl;
+            return 0;
+        }
+    }
+
+    if (outputFormForAnglesArg.isPresent()) {
+        const char *outputFormat = outputFormForAnglesArg.values().front();
+        if (!strcmp(outputFormat, "degrees")) {
+            outputFormForAngles = Angle::OutputForm::Degrees;
+        } else if (!strcmp(outputFormat, "minutes")) {
+            outputFormForAngles = Angle::OutputForm::Minutes;
+        } else if (!strcmp(outputFormat, "seconds")) {
+            outputFormForAngles = Angle::OutputForm::Seconds;
+        } else if (!strcmp(outputFormat, "radians")) {
+            outputFormForAngles = Angle::OutputForm::Radians;
+        } else {
+            cerr << "Invalid output form for angles given, see --help." << endl;
+            return 0;
+        }
+    }
+
+    if (inputSystemForLocationsArg.isPresent()) {
+        const char *inputFormat = inputSystemForLocationsArg.values().front();
+        if (!strcmp(inputFormat, "latitude&longitue")) {
+            inputSystemForLocations = SystemForLocations::LatitudeLongitude;
+        } else if (!strcmp(inputFormat, "UTM-WGS84")) {
+            inputSystemForLocations = SystemForLocations::UTMWGS84;
+        } else {
+            cerr << "Invalid geographic coordinate system given, see --help." << endl;
+            return 0;
+        }
+    }
+
+    if (outputSystemForLocationsArg.isPresent()) {
+        const char *outputSystem = outputSystemForLocationsArg.values().front();
+        if (!strcmp(outputSystem, "latitude&longitue")) {
+            outputSystemForLocations = SystemForLocations::LatitudeLongitude;
+        } else if (!strcmp(outputSystem, "UTM-WGS84")) {
+            outputSystemForLocations = SystemForLocations::UTMWGS84;
+        } else {
+            cerr << "Invalid geographic coordinate system given, see --help." << endl;
+            return 0;
+        }
+    }
+
     try {
-        SET_APPLICATION_INFO;
-
-        ArgumentParser argparser;
-
-        Argument convert("convert", 'c', "Converts the given coordinate or location to the specified output form.");
-        convert.setRequiredValueCount(1);
-        convert.appendValueName("coordinate/location");
-
-        Argument distance("distance", 'd', "Computes the approximate distance in meters between two locations.");
-        distance.setRequiredValueCount(2);
-        distance.appendValueName("location 1");
-        distance.appendValueName("location 2");
-
-        Argument trackLength("track-length", 't',
-            "Computes the approximate length in meters of a track given by a file containing trackpoints separated by new lines.");
-        Argument fileArg("file", 'f', "Specifies the file containing the track points");
-        fileArg.setRequiredValueCount(1);
-        fileArg.appendValueName("path");
-        fileArg.setRequired(true);
-        Argument circle(
-            "circle", '\0', "If present the distance between the first and the last trackpoints will be added to the total track length.");
-        trackLength.setSubArguments({ &fileArg, &circle });
-
-        Argument bearing("bearing", 'b',
-            "Computes the approximate initial bearing East of true North when traveling along the shortest path between the given locations.");
-        bearing.setRequiredValueCount(2);
-        bearing.appendValueName("location 1");
-        bearing.appendValueName("location 2");
-
-        Argument fbearing("final-bearing", '\0',
-            "Computes the approximate final bearing East of true North when traveling along the shortest path between the given locations.");
-        fbearing.setRequiredValueCount(2);
-        fbearing.appendValueName("location 1");
-        fbearing.appendValueName("location 2");
-
-        Argument midpoint("midpoint", 'm', "Computes the approximate midpoint between the given locations.");
-        midpoint.setRequiredValueCount(2);
-        midpoint.appendValueName("location 1");
-        midpoint.appendValueName("location 2");
-
-        Argument destination("destination", '\0', "Calculates destination point given distance and bearing from start point.");
-        destination.setRequiredValueCount(3);
-        destination.appendValueName("start");
-        destination.appendValueName("distance");
-        destination.appendValueName("bearing");
-
-        Argument gmapsLink(
-            "gmaps-link", '\0', "Generates a Google Maps link for all locations given by a file containing locations separated by new lines.");
-        gmapsLink.setRequiredValueCount(1);
-        gmapsLink.appendValueName("path");
-
-        Argument inputAngularMeasureArg("input-angular-measure", 'i',
-            "Use this option to specify the angular measure you use to provide angles (degree or radian; default is degree).");
-        inputAngularMeasureArg.setRequiredValueCount(1);
-        inputAngularMeasureArg.appendValueName("angular measure");
-        inputAngularMeasureArg.setCombinable(true);
-
-        Argument outputFormForAnglesArg("output-angle-form", 'o',
-            "Use this option to specify the output form for angles (degrees, minutes, seconds or radians; default is degrees).");
-        outputFormForAnglesArg.setRequiredValueCount(1);
-        outputFormForAnglesArg.appendValueName("form");
-        outputFormForAnglesArg.setCombinable(true);
-
-        Argument inputSystemForLocationsArg("input-location-system", '\0',
-            "Use this option to specify the geographic system you use to provide locations (latitude&longitue or UTM-WGS84).");
-        inputSystemForLocationsArg.setRequiredValueCount(1);
-        inputSystemForLocationsArg.appendValueName("system");
-        inputSystemForLocationsArg.setCombinable(true);
-
-        Argument outputSystemForLocationsArg("output-location-system", '\0',
-            "Use this option to specify which geographic system is used to display locations (latitude&longitue or UTM-WGS84).");
-        outputSystemForLocationsArg.setRequiredValueCount(1);
-        outputSystemForLocationsArg.appendValueName("system");
-        outputSystemForLocationsArg.setCombinable(true);
-
-        HelpArgument help(argparser);
-
-        Argument version("version", 'v', "Shows the version of this application.");
-        argparser.setMainArguments({ &help, &convert, &distance, &trackLength, &bearing, &fbearing, &midpoint, &destination, &gmapsLink,
-            &inputAngularMeasureArg, &outputFormForAnglesArg, &inputSystemForLocationsArg, &outputSystemForLocationsArg, &version });
-        argparser.parseArgs(argc, argv);
-
-        if (inputAngularMeasureArg.isPresent()) {
-            const char *inputFormat = inputAngularMeasureArg.values().front();
-            if (!strcmp(inputFormat, "radian")) {
-                inputAngularMeasure = Angle::AngularMeasure::Radian;
-            } else if (!strcmp(inputFormat, "degree")) {
-                inputAngularMeasure = Angle::AngularMeasure::Degree;
-            } else {
-                cerr << "Invalid angular measure given, see --help." << endl;
-                return 0;
-            }
+        if (help.isPresent()) {
+            cout << endl;
+            printAngleFormatInfo(cout);
+        } else if (version.isPresent()) {
+            cout << APP_VERSION;
+        } else if (convert.isPresent()) {
+            printConversion(convert.values().front());
+        } else if (distance.isPresent()) {
+            printDistance(distance.values()[0], distance.values()[1]);
+        } else if (trackLength.isPresent()) {
+            printTrackLength(fileArg.values().front(), circle.isPresent());
+        } else if (bearing.isPresent()) {
+            printBearing(bearing.values()[0], bearing.values()[1]);
+        } else if (fbearing.isPresent()) {
+            printFinalBearing(fbearing.values()[0], fbearing.values()[1]);
+        } else if (midpoint.isPresent()) {
+            printMidpoint(midpoint.values()[0], midpoint.values()[1]);
+        } else if (destination.isPresent()) {
+            printDestination(destination.values()[0], destination.values()[1], destination.values()[2]);
+        } else if (gmapsLink.isPresent()) {
+            printMapsLink(gmapsLink.values().front());
+        } else {
+            cerr << "No arguments given. See --help for available commands.";
         }
-
-        if (outputFormForAnglesArg.isPresent()) {
-            const char *outputFormat = outputFormForAnglesArg.values().front();
-            if (!strcmp(outputFormat, "degrees")) {
-                outputFormForAngles = Angle::OutputForm::Degrees;
-            } else if (!strcmp(outputFormat, "minutes")) {
-                outputFormForAngles = Angle::OutputForm::Minutes;
-            } else if (!strcmp(outputFormat, "seconds")) {
-                outputFormForAngles = Angle::OutputForm::Seconds;
-            } else if (!strcmp(outputFormat, "radians")) {
-                outputFormForAngles = Angle::OutputForm::Radians;
-            } else {
-                cerr << "Invalid output form for angles given, see --help." << endl;
-                return 0;
-            }
-        }
-
-        if (inputSystemForLocationsArg.isPresent()) {
-            const char *inputFormat = inputSystemForLocationsArg.values().front();
-            if (!strcmp(inputFormat, "latitude&longitue")) {
-                inputSystemForLocations = SystemForLocations::LatitudeLongitude;
-            } else if (!strcmp(inputFormat, "UTM-WGS84")) {
-                inputSystemForLocations = SystemForLocations::UTMWGS84;
-            } else {
-                cerr << "Invalid geographic coordinate system given, see --help." << endl;
-                return 0;
-            }
-        }
-
-        if (outputSystemForLocationsArg.isPresent()) {
-            const char *outputSystem = outputSystemForLocationsArg.values().front();
-            if (!strcmp(outputSystem, "latitude&longitue")) {
-                outputSystemForLocations = SystemForLocations::LatitudeLongitude;
-            } else if (!strcmp(outputSystem, "UTM-WGS84")) {
-                outputSystemForLocations = SystemForLocations::UTMWGS84;
-            } else {
-                cerr << "Invalid geographic coordinate system given, see --help." << endl;
-                return 0;
-            }
-        }
-
-        try {
-            if (help.isPresent()) {
-                cout << endl;
-                printAngleFormatInfo(cout);
-            } else if (version.isPresent()) {
-                cout << APP_VERSION;
-            } else if (convert.isPresent()) {
-                printConversion(convert.values().front());
-            } else if (distance.isPresent()) {
-                printDistance(distance.values()[0], distance.values()[1]);
-            } else if (trackLength.isPresent()) {
-                printTrackLength(fileArg.values().front(), circle.isPresent());
-            } else if (bearing.isPresent()) {
-                printBearing(bearing.values()[0], bearing.values()[1]);
-            } else if (fbearing.isPresent()) {
-                printFinalBearing(fbearing.values()[0], fbearing.values()[1]);
-            } else if (midpoint.isPresent()) {
-                printMidpoint(midpoint.values()[0], midpoint.values()[1]);
-            } else if (destination.isPresent()) {
-                printDestination(destination.values()[0], destination.values()[1], destination.values()[2]);
-            } else if (gmapsLink.isPresent()) {
-                printMapsLink(gmapsLink.values().front());
-            } else {
-                cerr << "No arguments given. See --help for available commands.";
-            }
-        } catch (const ConversionException &) {
-            cerr << "The provided numbers couldn't be parsed correctly." << endl;
-            cerr << endl;
-            printAngleFormatInfo(cerr);
-        } catch (const Failure &ex) {
-            cerr << "The provided locations/coordinates couldn't be parsed correctly: " << ex.what() << endl;
-            cerr << endl;
-            printAngleFormatInfo(cerr);
-        }
+    } catch (const ConversionException &) {
+        cerr << "The provided numbers couldn't be parsed correctly." << endl;
+        cerr << endl;
+        printAngleFormatInfo(cerr);
     } catch (const Failure &ex) {
-        cerr << "Unable to parse arguments. " << ex.what() << endl << "See --help for available commands.";
+        cerr << "The provided locations/coordinates couldn't be parsed correctly: " << ex.what() << endl;
+        cerr << endl;
+        printAngleFormatInfo(cerr);
     }
 
     cout << endl;
