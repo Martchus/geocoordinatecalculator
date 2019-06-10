@@ -1,6 +1,6 @@
 #include "./angle.h"
 
-#include <c++utilities/application/failure.h>
+#include <c++utilities/misc/parseerror.h>
 #include <c++utilities/conversion/stringconversion.h>
 
 #include <cmath>
@@ -13,8 +13,7 @@
 #endif
 
 using namespace std;
-using namespace ApplicationUtilities;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
 
 Angle::Angle()
     : m_val(0)
@@ -46,14 +45,14 @@ Angle::Angle(const string &value, AngularMeasure measure)
         if (mpos == string::npos)
             m_val += stringToNumber<double>(value);
         else if (mpos >= (value.length() - 1))
-            throw Failure("excepted minutes after ':' in " + value);
+            throw ParseError("excepted minutes after ':' in " + value);
         else {
             m_val += stringToNumber<double>(value.substr(0, mpos));
             spos = value.find(':', mpos + 1);
             if (spos == string::npos)
                 m_val += stringToNumber<double>(value.substr(mpos + 1)) / 60.0;
             else if (spos >= (value.length() - 1))
-                throw Failure("excepted seconds after second ':'' in " + value);
+                throw ParseError("excepted seconds after second ':'' in " + value);
             else
                 m_val += (stringToNumber<double>(value.substr(mpos + 1, spos - mpos - 1)) / 60.0)
                     + (stringToNumber<double>(value.substr(spos + 1)) / 3600.0);

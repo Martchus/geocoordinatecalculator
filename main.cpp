@@ -4,7 +4,7 @@
 #include "resources/config.h"
 
 #include <c++utilities/application/argumentparser.h>
-#include <c++utilities/application/failure.h>
+#include <c++utilities/misc/parseerror.h>
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 
@@ -13,8 +13,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace ConversionUtilities;
-using namespace ApplicationUtilities;
+using namespace CppUtilities;
 
 Angle::AngularMeasure inputAngularMeasure = Angle::AngularMeasure::Degree;
 Angle::OutputForm outputFormForAngles = Angle::OutputForm::Degrees;
@@ -103,7 +102,7 @@ int main(int argc, char *argv[])
     Argument version("version", 'v', "Shows the version of this application.");
     argparser.setMainArguments({ &help, &convert, &distance, &trackLength, &bearing, &fbearing, &midpoint, &destination, &gmapsLink,
         &inputAngularMeasureArg, &outputFormForAnglesArg, &inputSystemForLocationsArg, &outputSystemForLocationsArg, &version });
-    argparser.parseArgsOrExit(argc, argv);
+    argparser.parseArgs(argc, argv);
 
     if (inputAngularMeasureArg.isPresent()) {
         const char *inputFormat = inputAngularMeasureArg.values().front();
@@ -186,7 +185,7 @@ int main(int argc, char *argv[])
         cerr << "The provided numbers couldn't be parsed correctly." << endl;
         cerr << endl;
         printAngleFormatInfo(cerr);
-    } catch (const Failure &ex) {
+    } catch (const ParseError &ex) {
         cerr << "The provided locations/coordinates couldn't be parsed correctly: " << ex.what() << endl;
         cerr << endl;
         printAngleFormatInfo(cerr);
@@ -331,7 +330,7 @@ void printMapsLink(const string &filePath)
             }
             cout << "&mra=mi&mrsp=2&sz=16&z=16";
         } else {
-            throw Failure("At least one location is required to generate a link.");
+            throw ParseError("At least one location is required to generate a link.");
         }
     } catch (const std::ios_base::failure &failure) {
         cout << "An IO failure occured when reading file from provided path: " << failure.what() << endl;

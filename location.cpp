@@ -1,6 +1,6 @@
 #include "./location.h"
 
-#include <c++utilities/application/failure.h>
+#include <c++utilities/misc/parseerror.h>
 #include <c++utilities/conversion/stringconversion.h>
 
 #include <cmath>
@@ -8,8 +8,7 @@
 #include <sstream>
 
 using namespace std;
-using namespace ApplicationUtilities;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
 
 // WGS84 Parameters
 #define WGS84_A 6378137.0 // major axis
@@ -54,11 +53,11 @@ Location::Location(const string &latitudeAndLongitude, Angle::AngularMeasure mea
 {
     string::size_type dpos = latitudeAndLongitude.find(',');
     if (dpos == string::npos)
-        throw Failure("Pair of coordinates (latitude and longitude) required.");
+        throw ParseError("Pair of coordinates (latitude and longitude) required.");
     else if (dpos >= (latitudeAndLongitude.length() - 1))
-        throw Failure("No second longitude following after comma.");
+        throw ParseError("No second longitude following after comma.");
     else if (latitudeAndLongitude.find(',', dpos + 1) != string::npos)
-        throw Failure("More then 2 coordinates given.");
+        throw ParseError("More then 2 coordinates given.");
     m_lat = Angle(latitudeAndLongitude.substr(0, dpos), measure);
     m_lon = Angle(latitudeAndLongitude.substr(dpos + 1), measure);
 }
@@ -199,7 +198,7 @@ Location Location::midpoint(const Location &location1, const Location &location2
 double Location::trackLength(const std::vector<Location> &track, bool circle)
 {
     if (track.size() < 2)
-        throw Failure("At least two locations are required to calculate a distance.");
+        throw ParseError("At least two locations are required to calculate a distance.");
 
     const Location *location1 = &track.at(0);
     const Location *location2 = &track.at(1);
@@ -288,7 +287,7 @@ void Location::setValueByProvidedUtmWgs4Coordinates(const string &utmWgs4Coordin
             return;
         }
     }
-    throw Failure("UTM coordinates incomplete.");
+    throw ParseError("UTM coordinates incomplete.");
 }
 
 void Location::setValueByProvidedUtmWgs4Coordinates(int zone, char zoneDesignator, double easting, double northing)
