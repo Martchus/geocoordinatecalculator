@@ -271,7 +271,7 @@ void printTrackLength(const string &filePath, bool circle)
         printDistance(Location::trackLength(locations, circle));
         cout << " (" << locations.size() << " trackpoints)";
     } catch (const std::ios_base::failure &failure) {
-        cout << "An IO failure occured when reading file from provided path: " << failure.what() << endl;
+        cout << "An IO failure occurred when reading file from provided path: " << failure.what() << endl;
     }
 }
 
@@ -333,6 +333,6 @@ void printMapsLink(const string &filePath)
             throw ParseError("At least one location is required to generate a link.");
         }
     } catch (const std::ios_base::failure &failure) {
-        cout << "An IO failure occured when reading file from provided path: " << failure.what() << endl;
+        cout << "An IO failure occurred when reading file from provided path: " << failure.what() << endl;
     }
 }
